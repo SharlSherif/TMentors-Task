@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import ProductCard from "./components/ProductCard";
 
 // I know that this is supposed to be an environment variable
 const API = "http://localhost:4000/api/";
@@ -10,7 +11,6 @@ function App() {
   const [BrandFilterID, setBrandFilterID] = useState("All");
   const [PriceFilter, setPrice] = useState(0);
   // ?filters
-
 
   //? all products, never modified after initialization
   const [products, setProducts] = useState([]);
@@ -91,10 +91,7 @@ function App() {
     query = query.toLowerCase();
     let results = [];
     for (let product of products) {
-      if (
-        product.name.toLowerCase().includes(query) ||
-        product.name.toLowerCase().includes(query)
-      ) {
+      if (product.name.toLowerCase().includes(query)) {
         results.push(product);
       }
     }
@@ -103,30 +100,96 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <input onChange={(e) => SearchThroughProducts(e.target.value)} />
-      <input
-        placeholder="price"
-        onChange={(e) => setPrice(Number(e.target.value))}
-      />
-      {categories.map((category) => {
-        return (
-          <p onClick={() => setCategoryFilterID(category._id)}>
-            {category.name}
-          </p>
-        );
-      })}
+    <div className="box">
+      <div className="left">
+        <h4 className="title">Price</h4>
 
-      {brands.map((brand) => {
-        return <p onClick={() => setBrandFilterID(brand._id)}>{brand.name}</p>;
-      })}
-      {productsRender.map((product) => {
-        return (
-          <p>
-            {product.price} - {product.name}
-          </p>
-        );
-      })}
+        <div className="price-range">
+          <input
+            placeholder="maximum price"
+            className="form-control"
+            onChange={(e) => setPrice(Number(e.target.value))}
+          />
+        </div>
+
+        <div className="filters">
+          <h4 className="title">Categories</h4>
+          <ul>
+            <li>
+              <input
+                name="category"
+                onClick={() => setCategoryFilterID("All")}
+                type="radio"
+                className="choice"
+              />
+
+              <span>All Categories</span>
+            </li>
+            {categories.map((category) => {
+              return (
+                <li>
+                  <input
+                    name="category"
+                    onClick={() => setCategoryFilterID(category._id)}
+                    type="radio"
+                    className="choice"
+                  />
+
+                  <span>{category.name}</span>
+                </li>
+              );
+            })}
+          </ul>
+
+          <h4 className="title">Brands</h4>
+
+          <ul>
+            <li>
+              <input
+                name="brand"
+                onClick={() => setBrandFilterID("All")}
+                type="radio"
+                className="choice"
+              />
+
+              <span>All Brands</span>
+            </li>
+            {brands.map((brand) => {
+              return (
+                <li>
+                  <input
+                    onClick={() => setBrandFilterID(brand._id)}
+                    type="radio"
+                    name="brand"
+                    className="choice"
+                  />
+
+                  <span>{brand.name}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+      <div className="right">
+        <input
+          onChange={(e) => SearchThroughProducts(e.target.value)}
+          className="search-input form-control"
+          placeholder="Search.."
+        />
+
+        <div className="grid">
+          {productsRender.length < 1 && <p>No results were found</p>}
+          {productsRender.map((product) => {
+            return (
+              <ProductCard product={product} />
+              // <p>
+              //   {product.price} - {product.name}
+              // </p>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
